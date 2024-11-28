@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="pokeball.png">
+</head>
+<body>
+  <header>
+    <h1>Pokédex</h1>
+    <div id="search-container">
+      <input
+        type="text"
+        id="search-bar"
+        placeholder="Search Pokémon (Name or #)"
+      />
+      <div id="filter-container">
+        <button id="filter-button">Filter</button>
+        <div id="filter-menu">
+          <label><input type="checkbox" value="all" checked> All</label>
+          <label><input type="checkbox" value="fire"> Fire</label>
+          <label><input type="checkbox" value="water"> Water</label>
+          <label><input type="checkbox" value="grass"> Grass</label>
+          <label><input type="checkbox" value="electric"> Electric</label>
+          <label><input type="checkbox" value="psychic"> Psychic</label>
+          <label><input type="checkbox" value="ice"> Ice</label>
+          <label><input type="checkbox" value="dragon"> Dragon</label>
+          <label><input type="checkbox" value="dark"> Dark</label>
+          <label><input type="checkbox" value="fairy"> Fairy</label>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="pokedex" class="pokedex-container"></main>
+  <script src="script.js"></script>
+</body>
+</html>
