@@ -1,111 +1,121 @@
-/* Garante que a largura da página não ultrapasse a viewport */
+/* Define o estilo global do corpo da página */
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(180deg, #1e0034, #3b0564);
-    color: #ffffff;
+    font-family: 'Arial', sans-serif; /* Fonte principal */
+    background: linear-gradient(180deg, #1e0034, #3b0564); /* Fundo gradiente */
+    color: #ffffff; /* Cor do texto */
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; /* Exibe o conteúdo em um layout flex */
+    flex-direction: column; /* Direção da flexbox */
+    align-items: center; /* Centraliza horizontalmente */
     overflow-x: hidden; /* Remove a rolagem horizontal */
 }
 
+/* Estilo do cabeçalho */
 header {
-    background: linear-gradient(90deg, #ff3e3e, #ff7a3e, #ffd700, #6890f0, #78c850);
-    text-align: center;
-    padding: 20px;
-    width: 100%;
-    color: black;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    box-sizing: border-box; /* Garante que padding e borda estejam dentro da largura */
+    background: linear-gradient(90deg, #ff3e3e, #ff7a3e, #ffd700, #6890f0, #78c850); /* Fundo colorido */
+    text-align: center; /* Centraliza o texto */
+    padding: 20px; /* Espaçamento interno */
+    width: 100%; /* Ocupa toda a largura */
+    color: black; /* Cor do texto */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sombra */
+    box-sizing: border-box; /* Inclui padding e borda dentro da largura */
 }
 
+/* Estilo do título no cabeçalho */
 header h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    font-family: 'Arial', sans-serif;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.6);
+    font-size: 3rem; /* Tamanho da fonte */
+    font-weight: bold; /* Fonte em negrito */
+    font-family: 'Arial', sans-serif; /* Fonte principal */
+    text-transform: uppercase; /* Tudo em maiúsculas */
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.6); /* Sombra do texto */
     margin: 0;
 }
 
+/* Container de busca e filtros */
 #search-container {
     margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    flex-wrap: wrap; /* Ajusta os elementos para quebrar linha se necessário */
+    gap: 10px; /* Espaçamento entre os elementos */
+    flex-wrap: wrap; /* Permite quebras de linha */
 }
 
+/* Estilo do campo de busca */
 #search-bar {
     width: 300px;
     padding: 10px;
-    border-radius: 20px;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    outline: none;
+    border-radius: 20px; /* Bordas arredondadas */
+    border: none; /* Remove bordas padrão */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+    outline: none; /* Remove o contorno */
 }
 
+/* Container do botão de filtro */
 #filter-container {
-    position: relative;
+    position: relative; /* Permite posicionar o menu relativo ao botão */
 }
 
+/* Estilo do botão de filtro */
 #filter-button {
     padding: 10px 20px;
-    background-color: #f4f4f4;
-    border: none;
-    border-radius: 20px;
+    background-color: #f4f4f4; /* Cor de fundo */
+    border: none; /* Remove bordas padrão */
+    border-radius: 20px; /* Bordas arredondadas */
     font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer; /* Exibe o cursor de ponteiro */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Animações */
 }
 
+/* Animação no hover do botão de filtro */
 #filter-button:hover {
-    background-color: #ddd;
-    transform: scale(1.05);
+    background-color: #ddd; /* Cor ao passar o mouse */
+    transform: scale(1.05); /* Aumenta o tamanho */
 }
 
+/* Estilo do menu de filtros */
 #filter-menu {
-    display: none;
+    display: none; /* Menu inicialmente oculto */
     position: absolute;
-    top: 50px;
+    top: 50px; /* Posiciona abaixo do botão */
     left: 0;
-    background-color: #2e1b47;
-    border: 1px solid #444;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    background-color: #2e1b47; /* Cor de fundo */
+    border: 1px solid #444; /* Borda */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Sombra */
     padding: 15px;
-    z-index: 10;
-    width: 220px;
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #78c850 #2e1b47;
+    z-index: 10; /* Exibe sobre outros elementos */
+    width: 220px; /* Largura do menu */
+    max-height: 300px; /* Altura máxima com rolagem */
+    overflow-y: auto; /* Ativa rolagem vertical */
+    scrollbar-width: thin; /* Personaliza barra (Firefox) */
+    scrollbar-color: #78c850 #2e1b47; /* Cores da barra (Firefox) */
 }
 
+/* Estilo para barras de rolagem no Chrome */
 #filter-menu::-webkit-scrollbar {
-    width: 8px;
+    width: 8px; /* Largura */
 }
 
 #filter-menu::-webkit-scrollbar-thumb {
-    background-color: #78c850;
-    border-radius: 10px;
-    border: 2px solid #2e1b47;
+    background-color: #78c850; /* Cor do "polegar" */
+    border-radius: 10px; /* Bordas arredondadas */
+    border: 2px solid #2e1b47; /* Espaçamento */
 }
 
 #filter-menu::-webkit-scrollbar-thumb:hover {
-    background-color: #66a844;
+    background-color: #66a844; /* Cor no hover */
 }
 
 #filter-menu::-webkit-scrollbar-track {
-    background-color: #1e0034;
+    background-color: #1e0034; /* Fundo do trilho */
     border-radius: 10px;
 }
 
+/* Estilo dos rótulos do menu de filtros */
 #filter-menu label {
     display: flex;
     align-items: center;
@@ -119,31 +129,36 @@ header h1 {
     transition: background-color 0.3s ease;
 }
 
+/* Cor ao passar o mouse nos rótulos */
 #filter-menu label:hover {
     background-color: #3b0564;
 }
 
+/* Estilo dos checkboxes */
 #filter-menu input {
-    accent-color: #78c850;
-    transform: scale(1.2);
-    cursor: pointer;
+    accent-color: #78c850; /* Cor personalizada */
+    transform: scale(1.2); /* Aumenta o tamanho */
+    cursor: pointer; /* Exibe cursor de ponteiro */
 }
 
+/* Torna o menu visível quando ativo */
 #filter-menu.active {
     display: block;
     animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Container dos cards */
 .pokedex-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
     padding: 40px;
-    width: 100%; /* Garante que não ultrapasse a largura */
-    box-sizing: border-box;
+    width: 100%;
+    box-sizing: border-box; /* Garante que padding e borda sejam incluídos */
 }
 
+/* Estilo dos cards */
 .pokemon-card {
     background: #2e1b47;
     border-radius: 12px;
@@ -152,27 +167,31 @@ header h1 {
     padding: 20px;
     width: 150px;
     transition: transform 0.3s ease, opacity 0.3s ease;
-    image-rendering: pixelated;
+    image-rendering: pixelated; /* Garante aparência de pixels */
 }
 
+/* Animação ao passar o mouse nos cards */
 .pokemon-card:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-    opacity: 0.9;
+    transform: scale(1.1); /* Aumenta o tamanho */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Aumenta a sombra */
+    opacity: 0.9; /* Reduz a opacidade */
 }
 
+/* Estilo da imagem nos cards */
 .pokemon-card img {
     width: 100px;
     height: 100px;
-    object-fit: contain;
+    object-fit: contain; /* Garante que a imagem caiba */
     margin: 0 auto;
     image-rendering: pixelated;
 }
 
+/* Informações nos cards */
 .pokemon-info {
     padding: 10px;
 }
 
+/* Nome do Pokémon */
 .pokemon-name {
     font-size: 1.2rem;
     font-weight: bold;
@@ -181,12 +200,14 @@ header h1 {
     margin-bottom: 10px;
 }
 
+/* ID do Pokémon */
 .pokemon-id {
     font-size: 0.9rem;
     color: #aaa;
     margin: 10px 0 5px;
 }
 
+/* Container de tipos de Pokémon */
 .pokemon-types {
     display: flex;
     justify-content: center;
@@ -194,6 +215,7 @@ header h1 {
     flex-wrap: wrap;
 }
 
+/* Estilo dos tipos */
 .pokemon-type {
     font-size: 0.8rem;
     font-weight: bold;
@@ -203,75 +225,27 @@ header h1 {
     text-transform: capitalize;
 }
 
-.type-normal {
-    background-color: #A9AA79;
-}
+/* Tipos de Pokémon com cores */
+.type-fire { background-color: #F0812C; }
+.type-water { background-color: #6891F0; }
+.type-grass { background-color: #79C94F; }
+.type-electric { background-color: #F8D12C; }
+.type-ice { background-color: #99D9D9; }
+.type-fighting { background-color: #C12C23; }
+.type-poison { background-color: #A13EA1; }
+.type-ground { background-color: #E1C168; }
+.type-flying { background-color: #A991F0; }
+.type-psychic { background-color: #F85789; }
+.type-bug { background-color: #A9B91A; }
+.type-rock { background-color: #B9A135; }
+.type-ghost { background-color: #715799; }
+.type-dragon { background-color: #7135F8; }
+.type-dark { background-color: #715746; }
+.type-steel { background-color: #B9B9D1; }
+.type-fairy { background-color: #EF9AAE; }
 
-.type-fire {
-    background-color: #F0812C;
-}
-
-.type-water {
-    background-color: #6891F0;
-}
-
-.type-grass {
-    background-color: #79C94F;
-}
-.type-electric {
-    background-color: #F8D12C;
-}
-.type-ice {
-    background-color: #99D9D9;
-}
-.type-fighting {
-    background-color: #C12C23;
-}
-.type-poison {
-    background-color: #A13EA1;
-}
-.type-ground {
-    background-color: #E1C168;
-}
-.type-flying {
-    background-color: #A991F0;
-}
-.type-psychic {
-    background-color: #F85789;
-}
-.type-bug {
-    background-color: #A9B91A;
-}
-.type-rock {
-    background-color: #B9A135;
-}
-.type-ghost {
-    background-color: #715799;
-}
-
-.type-dragon {
-    background-color: #7135F8;
-}
-
-.type-dark {
-    background-color: #715746;
-}
-
-.type-steel {
-    background-color: #B9B9D1;
-}
-
-.type-fairy {
-    background-color: #EF9AAE;
-}
-
+/* Animação de fade-in */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

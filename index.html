@@ -1,25 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Define o conjunto de caracteres utilizado pela página -->
   <meta charset="UTF-8">
+
+  <!-- Configura a viewport para dispositivos móveis, garantindo responsividade -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Define o título da página, exibido na aba do navegador -->
   <title>Pokédex</title>
+
+  <!-- Link para o arquivo de estilos CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- Define o ícone (favicon) da página, exibido na aba do navegador -->
   <link rel="icon" type="image/png" href="pokeball.png">
 </head>
 <body>
+  <!-- Cabeçalho da página -->
   <header>
+    <!-- Título principal da página -->
     <h1>Pokédex</h1>
+
+    <!-- Container para a barra de pesquisa e o botão de filtros -->
     <div id="search-container">
+      <!-- Barra de pesquisa para buscar Pokémon -->
       <input
-        type="text"
-        id="search-bar"
-        placeholder="Search Pokémon (Name or #)"
+        type="text" <!-- Define o tipo do input como texto -->
+        id="search-bar" <!-- Define um ID único para referência no JavaScript -->
+        placeholder="Search Pokémon (Name or #)" <!-- Texto exibido enquanto o input está vazio -->
       />
+
+      <!-- Container para o botão de filtros -->
       <div id="filter-container">
+        <!-- Botão para abrir o menu de filtros -->
         <button id="filter-button">Filter</button>
+
+        <!-- Menu de filtros -->
         <div id="filter-menu">
+          <!-- Opção para selecionar todos os tipos -->
           <label><input type="checkbox" value="all" checked> All</label>
+
+          <!-- Opções de tipos específicos -->
           <label><input type="checkbox" value="fire"> Fire</label>
           <label><input type="checkbox" value="water"> Water</label>
           <label><input type="checkbox" value="grass"> Grass</label>
@@ -33,7 +55,11 @@
       </div>
     </div>
   </header>
+
+  <!-- Área principal da página onde os cards de Pokémon serão exibidos -->
   <main id="pokedex" class="pokedex-container"></main>
+
+  <!-- Link para o arquivo JavaScript que controla as funcionalidades da página -->
   <script src="script.js"></script>
 </body>
 </html>
