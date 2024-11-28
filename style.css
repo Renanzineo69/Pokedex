@@ -226,6 +226,7 @@ header h1 {
 }
 
 /* Tipos de Pokémon com cores */
+.type-normal {background-color: #A9AA79;}
 .type-fire { background-color: #F0812C; }
 .type-water { background-color: #6891F0; }
 .type-grass { background-color: #79C94F; }
