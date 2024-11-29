@@ -69,6 +69,7 @@ header h1 {
     transform: scale(1.05);
 }
 
+/* Fixar a navbar de filtros (Tabs) no topo */
 #filter-menu {
     display: none;
     position: absolute;
@@ -80,7 +81,6 @@ header h1 {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     padding: 15px;
     z-index: 10;
-    width: 220px;
     max-height: 300px;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -134,14 +134,19 @@ header h1 {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Estilo das abas de filtros com animação */
+/* Ajustar as abas de "Types" e "Generations" para ocupar toda a largura do filtro */
 .tabs {
     display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    position: relative;
+    justify-content: relative; /* Distribuir as abas de forma que ocupem toda a largura */
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    background: #2e1b47;
+    z-index: 2; /* Garante que a barra de navegação ficará sobre outros elementos */
+    padding: 10px;
 }
 
+/* Modificar a animação para garantir a transição suave em ambas as direções */
 .tab {
     background: transparent;
     color: #fff;
@@ -151,10 +156,9 @@ header h1 {
     font-weight: bold;
     position: relative;
     text-transform: uppercase;
-    z-index: 1;
 }
 
-/* Modificar a animação para garantir a transição suave em ambas as direções */
+/* Modificar a animação de transição das abas */
 .tab::after {
     content: '';
     position: absolute;
@@ -182,6 +186,28 @@ header h1 {
     left: 0;
     width: 0%; /* Inicialmente a largura da underline é 0 */
     transition: left 0.3s ease, width 0.3s ease; /* Transição suave da posição e largura */
+}
+
+/* Estilo para o botão "Clear Filters" */
+#clear-filters-btn {
+  background: transparent;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  position: relative;
+  text-transform: uppercase;
+  margin-left: 10px; /* Adiciona margem para separar da aba "Generations" */
+}
+
+#clear-filters-btn:hover {
+  background-color: #3b0564;
+}
+
+/* Ícone de lixeira */
+#clear-filters-btn i {
+  font-size: 1.2rem;
 }
 
 .generation-title {

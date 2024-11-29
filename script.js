@@ -7,6 +7,7 @@ const filterMenu = document.getElementById("filter-menu");
 const generationTabButton = document.getElementById("generation-tab");
 const typeTabButton = document.getElementById("type-tab");
 const tabHighlight = document.getElementById("tab-highlight");
+const clearFiltersButton = document.getElementById("clear-filters-btn"); // Botão de limpar filtros
 let allPokemon = [];
 let selectedTypes = ["all"];
 let selectedGeneration = null;
@@ -39,10 +40,9 @@ const fetchPokemon = async () => {
           ? 8 : pokemonDetails.id <= 1025
           ? 9 : null;
 
-        // Verifica o sprite animado, incluindo um fallback para as gerações mais recentes
         const animatedImage = pokemonDetails.sprites.versions["generation-v"]["black-white"].animated.front_default
           || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonDetails.id}.gif`
-          || pokemonDetails.sprites.front_default;  // Fallback para o sprite estático
+          || null;
 
         pokemonList.push({
           id: pokemonDetails.id,
@@ -66,7 +66,7 @@ const fetchPokemon = async () => {
   return pokemonList;
 };
 
-// Função para renderizar os cards de Pokémon na página, agrupados por geração
+// Função para renderizar os cards de Pokémon na página
 const renderPokemon = (pokemonList) => {
   const generations = {};
   pokemonList.forEach(pokemon => {
@@ -78,7 +78,6 @@ const renderPokemon = (pokemonList) => {
 
   let output = "";
 
-  // Itera pelas gerações para exibir apenas as que têm Pokémon
   for (const generation in generations) {
     if (selectedGeneration === null || generation == selectedGeneration) {
       const romanGeneration = convertToRoman(parseInt(generation));
@@ -89,9 +88,9 @@ const renderPokemon = (pokemonList) => {
           ${generations[generation].map(
             (pokemon) => `
               <div class="pokemon-card" 
-                onmouseover="toggleGif(this, '${pokemon.animatedImage}')"
+                onmouseover="toggleGif(this, '${pokemon.animatedImage || pokemon.staticImage}')"
                 onmouseout="toggleGif(this, '${pokemon.staticImage}')">
-                <img src="${pokemon.staticImage}" alt="${pokemon.name}">
+                <img src="${pokemon.staticImage}" alt="${pokemon.name}" data-static-image="${pokemon.staticImage}">
                 <div class="pokemon-info">
                   <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p>
                   <p class="pokemon-name">${pokemon.name}</p>
@@ -113,10 +112,10 @@ const renderPokemon = (pokemonList) => {
   pokedex.innerHTML = output || '<p class="no-results">No Pokémon found.</p>';
 };
 
-// Função para alternar entre imagem estática e GIF ao passar o mouse
+// Função para alternar entre imagem estática e GIF
 const toggleGif = (card, image) => {
   const img = card.querySelector("img");
-  img.src = image;
+  img.src = image || img.dataset.staticImage;  // Se não houver imagem animada, mantém a estática
 };
 
 // Função para aplicar filtro de tipos
@@ -128,7 +127,7 @@ const filterByType = () => {
           selectedTypes.some((type) => pokemon.type.includes(type))
         );
 
-  renderPokemon(filteredPokemon); // Exibe Pokémon filtrados por tipo
+  renderPokemon(filteredPokemon);
 };
 
 // Função para aplicar filtro de geração
@@ -137,7 +136,6 @@ const filterByGeneration = () => {
     return selectedGeneration === null || pokemon.generation === selectedGeneration;
   });
 
-  // Aplica o filtro de tipo após filtrar por geração
   filterByType(filteredByGeneration);
 };
 
@@ -145,6 +143,11 @@ const filterByGeneration = () => {
 document.querySelectorAll('input[name="generation"]').forEach((radio) => {
   radio.addEventListener('change', (e) => {
     selectedGeneration = parseInt(e.target.value);
+    selectedTypes = ["all"]; // Sempre que uma geração for selecionada, definimos "All" como tipo padrão
+    document.querySelectorAll("#filter-menu input[type='checkbox']").forEach((checkbox) => {
+      checkbox.checked = false; // Desmarcar todas as opções de tipo
+    });
+    document.querySelector('input[value="all"]').checked = true; // Marcar "All" como selecionado
     filterByGeneration();
   });
 });
@@ -209,34 +212,25 @@ generationTabButton.addEventListener("click", () => {
   typeTabButton.classList.remove("selected");
 });
 
+// Função para limpar os filtros
+clearFiltersButton.addEventListener("click", () => {
+  selectedTypes = ["all"];
+  selectedGeneration = null;
+  document.querySelectorAll("#filter-menu input").forEach((input) => input.checked = false);
+  document.querySelector('input[value="all"]').checked = true; // Marca "All" como selecionado
+
+  renderPokemon(allPokemon); // Exibe todos os Pokémon novamente
+});
+
 // Função principal para inicializar a Pokédex
 const initPokedex = async () => {
   allPokemon = await fetchPokemon();
   renderPokemon(allPokemon);
 
-  // Adiciona evento para buscar Pokémon ao digitar na barra de pesquisa
   searchBar.addEventListener("input", (e) => {
     const searchQuery = e.target.value.toLowerCase();
-    filterPokemon(searchQuery, selectedTypes.includes("all") ? allPokemon : allPokemon);
+    filterPokemon(searchQuery, allPokemon);
   });
-
-  // Lazy loading: Dispara o carregamento de mais Pokémon quando o usuário rolar para o final da lista
-  const loadMoreTrigger = document.createElement("div");
-  loadMoreTrigger.id = "load-more-trigger";
-  pokedex.appendChild(loadMoreTrigger);
-
-  const observer = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      loadMorePokemon();
-    }
-  }, { threshold: 1.0 });
-
-  observer.observe(loadMoreTrigger);
-};
-
-const loadMorePokemon = async () => {
-  allPokemon = [...allPokemon, ...(await fetchPokemon())];
-  renderPokemon(allPokemon);
 };
 
 initPokedex();

@@ -15,6 +15,9 @@
 
   <!-- Define o ícone (favicon) da página, exibido na aba do navegador -->
   <link rel="icon" type="image/png" href="image/icon.png">
+
+  <!-- Link para o Font Awesome (Ícones) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <!-- Cabeçalho da página -->
@@ -41,11 +44,16 @@
           <!-- Contêiner para as abas -->
           <div class="tabs">
             <!-- Botões de abas para selecionar entre tipos e gerações -->
-            <button id="type-tab" class="tab">Types</button>
+            <button id="type-tab" class="tab selected">Types</button>
             <button id="generation-tab" class="tab">Generations</button>
 
             <!-- Destaque da aba -->
             <div id="tab-highlight"></div>
+
+            <!-- Botão para limpar os filtros -->
+            <button id="clear-filters-btn">
+              <i class="fa fa-trash"></i> <!-- Ícone de lixeira -->
+            </button>
           </div>
 
           <!-- Filtro de tipos -->
