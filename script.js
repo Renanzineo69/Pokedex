@@ -1,134 +1,250 @@
 // Elementos DOM principais
-const pokedex = document.getElementById("pokedex"); // Container onde os cards de Pokémon serão exibidos
-const searchBar = document.getElementById("search-bar"); // Barra de pesquisa
-const filterContainer = document.getElementById("filter-container"); // Container que envolve o botão de filtro
-const filterButton = document.getElementById("filter-button"); // Botão para exibir o menu de filtros
-const filterMenu = document.getElementById("filter-menu"); // Menu de filtros
-let allPokemon = []; // Lista de todos os Pokémon carregados
-let selectedTypes = ["all"]; // Tipos de Pokémon selecionados (inicialmente "todos")
+const pokedex = document.getElementById("pokedex");
+const searchBar = document.getElementById("search-bar");
+const filterContainer = document.getElementById("filter-container");
+const filterButton = document.getElementById("filter-button");
+const filterMenu = document.getElementById("filter-menu");
+const generationTabButton = document.getElementById("generation-tab");
+const typeTabButton = document.getElementById("type-tab");
+const tabHighlight = document.getElementById("tab-highlight");
+let allPokemon = [];
+let selectedTypes = ["all"];
+let selectedGeneration = null;
 
-// Função para buscar dados dos 151 primeiros Pokémon da API
+let loadedPokemonCount = 0;
+const pokemonBatchSize = 50;
+const maxPokemonId = 1025;
+
+// Função para buscar dados dos Pokémon da API em lotes
 const fetchPokemon = async () => {
   const pokemonList = [];
-  for (let i = 1; i <= 151; i++) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`); // Faz uma requisição para a API
-    const data = await response.json(); // Converte a resposta em JSON
-    pokemonList.push({
-      id: data.id, // ID do Pokémon
-      name: data.name, // Nome do Pokémon
-      staticImage: data.sprites.front_default, // Imagem estática
-      animatedImage: data.sprites.versions["generation-v"]["black-white"].animated.front_default, // Imagem animada (GIF)
-      type: data.types.map((type) => type.type.name), // Tipos do Pokémon (ex.: "fire", "water")
-    });
+  let nextUrl = `https://pokeapi.co/api/v2/pokemon?limit=${pokemonBatchSize}&offset=${loadedPokemonCount}`;
+
+  while (nextUrl) {
+    const response = await fetch(nextUrl);
+    const data = await response.json();
+
+    for (const pokemon of data.results) {
+      const pokemonData = await fetch(pokemon.url);
+      const pokemonDetails = await pokemonData.json();
+      if (pokemonDetails.id <= maxPokemonId) {
+        const generation = pokemonDetails.id <= 151
+          ? 1 : pokemonDetails.id <= 251
+          ? 2 : pokemonDetails.id <= 386
+          ? 3 : pokemonDetails.id <= 493
+          ? 4 : pokemonDetails.id <= 649
+          ? 5 : pokemonDetails.id <= 721
+          ? 6 : pokemonDetails.id <= 809
+          ? 7 : pokemonDetails.id <= 905
+          ? 8 : pokemonDetails.id <= 1025
+          ? 9 : null;
+
+        // Verifica o sprite animado, incluindo um fallback para as gerações mais recentes
+        const animatedImage = pokemonDetails.sprites.versions["generation-v"]["black-white"].animated.front_default
+          || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonDetails.id}.gif`
+          || pokemonDetails.sprites.front_default;  // Fallback para o sprite estático
+
+        pokemonList.push({
+          id: pokemonDetails.id,
+          name: pokemonDetails.name,
+          staticImage: pokemonDetails.sprites.front_default,
+          animatedImage: animatedImage,
+          type: pokemonDetails.types.map((type) => type.type.name),
+          generation: generation,
+        });
+      }
+    }
+
+    if (pokemonList.length >= maxPokemonId) {
+      nextUrl = null;
+    } else {
+      nextUrl = data.next;
+    }
   }
-  return pokemonList; // Retorna a lista de Pokémon
+
+  loadedPokemonCount += pokemonList.length;
+  return pokemonList;
 };
 
-// Função para renderizar os cards de Pokémon na página
+// Função para renderizar os cards de Pokémon na página, agrupados por geração
 const renderPokemon = (pokemonList) => {
-  // Verifica se há Pokémon na lista para exibir
-  pokedex.innerHTML = pokemonList.length
-    ? pokemonList
-        .map(
+  const generations = {};
+  pokemonList.forEach(pokemon => {
+    if (!generations[pokemon.generation]) {
+      generations[pokemon.generation] = [];
+    }
+    generations[pokemon.generation].push(pokemon);
+  });
+
+  let output = "";
+
+  for (const generation in generations) {
+    const romanGeneration = convertToRoman(parseInt(generation));
+
+    output += `
+      <h2 class="generation-title">Generation ${romanGeneration}</h2>
+      <div class="generation-container" id="generation-${generation}">
+        ${generations[generation].map(
           (pokemon) => `
-        <div class="pokemon-card" 
-             onmouseover="toggleGif(this, '${pokemon.animatedImage}')"
-             onmouseout="toggleGif(this, '${pokemon.staticImage}')">
-          <img 
-            src="${pokemon.staticImage}" 
-            alt="${pokemon.name}">
-          <div class="pokemon-info">
-            <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p> <!-- ID formatado -->
-            <p class="pokemon-name">${pokemon.name}</p> <!-- Nome do Pokémon -->
-            <div class="pokemon-types">
-              ${pokemon.type
-                .map(
-                  (type) =>
-                    `<span class="pokemon-type type-${type}">${type}</span>` // Tipos estilizados
-                )
-                .join("")}
+            <div class="pokemon-card" 
+              onmouseover="toggleGif(this, '${pokemon.animatedImage}')"
+              onmouseout="toggleGif(this, '${pokemon.staticImage}')">
+              <img src="${pokemon.staticImage}" alt="${pokemon.name}">
+              <div class="pokemon-info">
+                <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p>
+                <p class="pokemon-name">${pokemon.name}</p>
+                <div class="pokemon-types">
+                  ${pokemon.type.map(
+                    (type) => `<span class="pokemon-type type-${type}">${type}</span>`
+                  ).join("")}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `
-        )
-        .join("") // Concatena todos os cards
-    : '<p class="no-results">No Pokémon found.</p>'; // Mensagem exibida quando não há resultados
+          `
+        ).join("")}
+      </div>
+      <hr>
+    `;
+  }
+
+  pokedex.innerHTML = output || '<p class="no-results">No Pokémon found.</p>';
 };
 
 // Função para alternar entre imagem estática e GIF ao passar o mouse
 const toggleGif = (card, image) => {
-  const img = card.querySelector("img"); // Seleciona a imagem do card
-  img.src = image; // Altera a fonte da imagem
+  const img = card.querySelector("img");
+  img.src = image;
 };
 
 // Função para aplicar filtro de tipos
 const filterByType = () => {
   const filteredPokemon =
-    selectedTypes.includes("all") || selectedTypes.length === 0 // Verifica se "todos" está selecionado
-      ? allPokemon // Exibe todos os Pokémon
+    selectedTypes.includes("all") || selectedTypes.length === 0
+      ? allPokemon
       : allPokemon.filter((pokemon) =>
-          selectedTypes.some((type) => pokemon.type.includes(type)) // Filtra Pokémon pelo tipo selecionado
+          selectedTypes.some((type) => pokemon.type.includes(type))
         );
 
-  const searchQuery = searchBar.value.toLowerCase(); // Obtém o valor atual da barra de pesquisa
-  filterPokemon(searchQuery, filteredPokemon); // Aplica os filtros de pesquisa e tipo
+  const searchQuery = searchBar.value.toLowerCase();
+  filterPokemon(searchQuery, filteredPokemon);
 };
+
+// Função para aplicar filtro de geração
+const filterByGeneration = () => {
+  const generationContainers = document.querySelectorAll('.generation-container');
+
+  generationContainers.forEach(container => {
+    const generationId = container.id.split('-')[1];
+    if (selectedGeneration === null || generationId == selectedGeneration) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+    }
+  });
+};
+
+// Atualizar a geração selecionada ao interagir com os botões de radio
+document.querySelectorAll('input[name="generation"]').forEach((radio) => {
+  radio.addEventListener('change', (e) => {
+    selectedGeneration = parseInt(e.target.value);
+    filterByGeneration();
+  });
+});
 
 // Atualizar os tipos de filtro quando o usuário interagir
 filterContainer.addEventListener("change", (e) => {
-  const { value, checked } = e.target; // Obtém o valor e o estado do checkbox
+  const { value, checked } = e.target;
 
   if (value === "all") {
-    // Se "all" foi marcado, limpa outras seleções
     selectedTypes = checked ? ["all"] : [];
     document
-      .querySelectorAll("#filter-menu input") // Seleciona todos os checkboxes
-      .forEach((input) => (input.checked = value === "all")); // Marca/desmarca todos
+      .querySelectorAll("#filter-menu input")
+      .forEach((input) => (input.checked = value === "all"));
   } else {
-    selectedTypes = selectedTypes.filter((type) => type !== "all"); // Remove "all" da seleção
-    if (checked) selectedTypes.push(value); // Adiciona o tipo selecionado
-    else selectedTypes = selectedTypes.filter((type) => type !== value); // Remove o tipo desmarcado
+    selectedTypes = selectedTypes.filter((type) => type !== "all");
+    if (checked) selectedTypes.push(value);
+    else selectedTypes = selectedTypes.filter((type) => type !== value);
   }
 
-  filterByType(); // Atualiza os resultados na página
+  filterByType();
 });
 
-// Função para alternar a exibição do menu de filtros
+// Toggle para exibir o menu de filtros
 filterButton.addEventListener("click", () => {
-  filterMenu.classList.toggle("active"); // Adiciona/remove a classe "active"
-  filterMenu.style.display = filterMenu.style.display === "block" ? "none" : "block"; // Exibe/esconde o menu
+  filterMenu.classList.toggle("active");
+  filterMenu.style.display = filterMenu.style.display === "block" ? "none" : "block";
 });
 
 // Função para filtrar Pokémon com base na pesquisa
 const filterPokemon = (searchQuery, pokemonList) => {
-  const normalizedQuery = searchQuery.startsWith("#") // Remove o "#" no início
+  const normalizedQuery = searchQuery.startsWith("#")
     ? searchQuery.slice(1)
     : searchQuery.toLowerCase();
 
   const filteredPokemon = pokemonList.filter((pokemon) => {
     const isIdMatch =
-      pokemon.id.toString().includes(normalizedQuery) || // Busca parcial por ID
-      pokemon.id.toString().padStart(3, "0").includes(normalizedQuery); // Busca parcial por ID com zeros à esquerda
+      pokemon.id.toString().includes(normalizedQuery) ||
+      pokemon.id.toString().padStart(3, "0").includes(normalizedQuery);
 
-    const isNameMatch = pokemon.name.toLowerCase().includes(normalizedQuery); // Busca por nome
+    const isNameMatch = pokemon.name.toLowerCase().includes(normalizedQuery);
 
-    return isIdMatch || isNameMatch; // Retorna true se houver correspondência
+    return isIdMatch || isNameMatch;
   });
 
-  renderPokemon(filteredPokemon); // Renderiza os resultados filtrados
+  renderPokemon(filteredPokemon);
 };
+
+// Alternar entre Filtros de Tipos e Gerações
+typeTabButton.addEventListener("click", () => {
+  document.querySelector(".generation-filters").style.display = "none";
+  document.querySelector(".type-filters").style.display = "block";
+  tabHighlight.style.left = "0%"; // Desliza o destaque para "Types"
+  typeTabButton.classList.add("selected");
+  generationTabButton.classList.remove("selected");
+});
+
+generationTabButton.addEventListener("click", () => {
+  document.querySelector(".type-filters").style.display = "none";
+  document.querySelector(".generation-filters").style.display = "block";
+  tabHighlight.style.left = "50%"; // Desliza o destaque para "Generations"
+  generationTabButton.classList.add("selected");
+  typeTabButton.classList.remove("selected");
+});
 
 // Função principal para inicializar a Pokédex
 const initPokedex = async () => {
-  allPokemon = await fetchPokemon(); // Carrega todos os Pokémon
-  renderPokemon(allPokemon); // Exibe todos os Pokémon inicialmente
+  allPokemon = await fetchPokemon();
+  renderPokemon(allPokemon);
 
   // Adiciona evento para buscar Pokémon ao digitar na barra de pesquisa
   searchBar.addEventListener("input", (e) => {
-    const searchQuery = e.target.value.toLowerCase(); // Obtém o texto digitado
-    filterPokemon(searchQuery, selectedTypes.includes("all") ? allPokemon : allPokemon); // Aplica a busca
+    const searchQuery = e.target.value.toLowerCase();
+    filterPokemon(searchQuery, selectedTypes.includes("all") ? allPokemon : allPokemon);
   });
+
+  // Lazy loading: Dispara o carregamento de mais Pokémon quando o usuário rolar para o final da lista
+  const loadMoreTrigger = document.createElement("div");
+  loadMoreTrigger.id = "load-more-trigger";
+  pokedex.appendChild(loadMoreTrigger);
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      loadMorePokemon();
+    }
+  }, { threshold: 1.0 });
+
+  observer.observe(loadMoreTrigger);
 };
 
-initPokedex(); // Chama a função principal para iniciar a aplicação
+const loadMorePokemon = async () => {
+  allPokemon = [...allPokemon, ...(await fetchPokemon())];
+  renderPokemon(allPokemon);
+};
+
+initPokedex();
+
+// Função para converter números para romanos
+function convertToRoman(num) {
+    const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+    return romanNumerals[num - 1] || num;
+}

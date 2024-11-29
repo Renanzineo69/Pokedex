@@ -25,10 +25,6 @@
     <!-- Container para a barra de pesquisa e o botão de filtros -->
     <div id="search-container">
       <!-- Barra de pesquisa para buscar Pokémon -->
-      
-      <!-- Define o tipo do input como texto -->
-      <!-- Define um ID único para referência no JavaScript -->
-      <!-- Texto exibido enquanto o input está vazio -->
       <input
         type="text" 
         id="search-bar" 
@@ -42,17 +38,51 @@
 
         <!-- Menu de filtros -->
         <div id="filter-menu">
-          <!-- Opções de tipos específicos -->
-          <label><input type="checkbox" value="normal"> Normal</label>
-          <label><input type="checkbox" value="fire"> Fire</label>
-          <label><input type="checkbox" value="water"> Water</label>
-          <label><input type="checkbox" value="grass"> Grass</label>
-          <label><input type="checkbox" value="electric"> Electric</label>
-          <label><input type="checkbox" value="psychic"> Psychic</label>
-          <label><input type="checkbox" value="ice"> Ice</label>
-          <label><input type="checkbox" value="dragon"> Dragon</label>
-          <label><input type="checkbox" value="dark"> Dark</label>
-          <label><input type="checkbox" value="fairy"> Fairy</label>
+          <!-- Contêiner para as abas -->
+          <div class="tabs">
+            <!-- Botões de abas para selecionar entre tipos e gerações -->
+            <button id="type-tab" class="tab">Types</button>
+            <button id="generation-tab" class="tab">Generations</button>
+
+            <!-- Destaque da aba -->
+            <div id="tab-highlight"></div>
+          </div>
+
+          <!-- Filtro de tipos -->
+          <div class="type-filters">
+            <label><input type="checkbox" value="all" checked> All</label>
+            <label><input type="checkbox" value="normal"> Normal</label>
+            <label><input type="checkbox" value="fire"> Fire</label>
+            <label><input type="checkbox" value="water"> Water</label>
+            <label><input type="checkbox" value="grass"> Grass</label>
+            <label><input type="checkbox" value="electric"> Electric</label>
+            <label><input type="checkbox" value="ice"> Ice</label>
+            <label><input type="checkbox" value="fighting"> Fighting</label>
+            <label><input type="checkbox" value="poison"> Poison</label>
+            <label><input type="checkbox" value="ground"> Ground</label>
+            <label><input type="checkbox" value="flying"> Flying</label>
+            <label><input type="checkbox" value="psychic"> Psychic</label>
+            <label><input type="checkbox" value="bug"> Bug</label>
+            <label><input type="checkbox" value="rock"> Rock</label>
+            <label><input type="checkbox" value="ghost"> Ghost</label>
+            <label><input type="checkbox" value="dragon"> Dragon</label>
+            <label><input type="checkbox" value="dark"> Dark</label>
+            <label><input type="checkbox" value="steel"> Steel</label>
+            <label><input type="checkbox" value="fairy"> Fairy</label>
+          </div>
+
+          <!-- Filtro de gerações -->
+          <div class="generation-filters" style="display: none;">
+            <label><input type="radio" name="generation" value="1"> Generation I</label>
+            <label><input type="radio" name="generation" value="2"> Generation II</label>
+            <label><input type="radio" name="generation" value="3"> Generation III</label>
+            <label><input type="radio" name="generation" value="4"> Generation IV</label>
+            <label><input type="radio" name="generation" value="5"> Generation V</label>
+            <label><input type="radio" name="generation" value="6"> Generation VI</label>
+            <label><input type="radio" name="generation" value="7"> Generation VII</label>
+            <label><input type="radio" name="generation" value="8"> Generation VIII</label>
+            <label><input type="radio" name="generation" value="9"> Generation IX</label>
+          </div>
         </div>
       </div>
     </div>
@@ -60,6 +90,9 @@
 
   <!-- Área principal da página onde os cards de Pokémon serão exibidos -->
   <main id="pokedex" class="pokedex-container"></main>
+
+  <!-- Elemento para gatilho de carregamento do lazy loading -->
+  <div id="load-more-trigger"></div>
 
   <!-- Link para o arquivo JavaScript que controla as funcionalidades da página -->
   <script src="script.js"></script>
