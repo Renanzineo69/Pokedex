@@ -78,33 +78,36 @@ const renderPokemon = (pokemonList) => {
 
   let output = "";
 
+  // Itera pelas gerações para exibir apenas as que têm Pokémon
   for (const generation in generations) {
-    const romanGeneration = convertToRoman(parseInt(generation));
+    if (selectedGeneration === null || generation == selectedGeneration) {
+      const romanGeneration = convertToRoman(parseInt(generation));
 
-    output += `
-      <h2 class="generation-title">Generation ${romanGeneration}</h2>
-      <div class="generation-container" id="generation-${generation}">
-        ${generations[generation].map(
-          (pokemon) => `
-            <div class="pokemon-card" 
-              onmouseover="toggleGif(this, '${pokemon.animatedImage}')"
-              onmouseout="toggleGif(this, '${pokemon.staticImage}')">
-              <img src="${pokemon.staticImage}" alt="${pokemon.name}">
-              <div class="pokemon-info">
-                <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p>
-                <p class="pokemon-name">${pokemon.name}</p>
-                <div class="pokemon-types">
-                  ${pokemon.type.map(
-                    (type) => `<span class="pokemon-type type-${type}">${type}</span>`
-                  ).join("")}
+      output += `
+        <h2 class="generation-title">Generation ${romanGeneration}</h2>
+        <div class="generation-container" id="generation-${generation}" style="${selectedGeneration && selectedGeneration != generation ? 'display: none;' : ''}">
+          ${generations[generation].map(
+            (pokemon) => `
+              <div class="pokemon-card" 
+                onmouseover="toggleGif(this, '${pokemon.animatedImage}')"
+                onmouseout="toggleGif(this, '${pokemon.staticImage}')">
+                <img src="${pokemon.staticImage}" alt="${pokemon.name}">
+                <div class="pokemon-info">
+                  <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p>
+                  <p class="pokemon-name">${pokemon.name}</p>
+                  <div class="pokemon-types">
+                    ${pokemon.type.map(
+                      (type) => `<span class="pokemon-type type-${type}">${type}</span>`
+                    ).join("")}
+                  </div>
                 </div>
               </div>
-            </div>
-          `
-        ).join("")}
-      </div>
-      <hr>
-    `;
+            `
+          ).join("")}
+        </div>
+        <hr>
+      `;
+    }
   }
 
   pokedex.innerHTML = output || '<p class="no-results">No Pokémon found.</p>';
@@ -125,22 +128,17 @@ const filterByType = () => {
           selectedTypes.some((type) => pokemon.type.includes(type))
         );
 
-  const searchQuery = searchBar.value.toLowerCase();
-  filterPokemon(searchQuery, filteredPokemon);
+  renderPokemon(filteredPokemon); // Exibe Pokémon filtrados por tipo
 };
 
 // Função para aplicar filtro de geração
 const filterByGeneration = () => {
-  const generationContainers = document.querySelectorAll('.generation-container');
-
-  generationContainers.forEach(container => {
-    const generationId = container.id.split('-')[1];
-    if (selectedGeneration === null || generationId == selectedGeneration) {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-    }
+  const filteredByGeneration = allPokemon.filter(pokemon => {
+    return selectedGeneration === null || pokemon.generation === selectedGeneration;
   });
+
+  // Aplica o filtro de tipo após filtrar por geração
+  filterByType(filteredByGeneration);
 };
 
 // Atualizar a geração selecionada ao interagir com os botões de radio
@@ -166,7 +164,7 @@ filterContainer.addEventListener("change", (e) => {
     else selectedTypes = selectedTypes.filter((type) => type !== value);
   }
 
-  filterByType();
+  filterByGeneration(); // Aplica a geração e os tipos após mudança
 });
 
 // Toggle para exibir o menu de filtros
