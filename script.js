@@ -156,24 +156,49 @@ const filterByType = () => {
   renderPokemon(filteredPokemon);
 };
 
-// Função para aplicar filtro de geração
+// Função para aplicar filtro de geração e também de tipagem
 const filterByGeneration = () => {
+  // Filtrar os Pokémon pela geração selecionada
   const filteredByGeneration = allPokemon.filter(pokemon => {
     return selectedGeneration === null || pokemon.generation === selectedGeneration;
   });
 
-  filterByType(filteredByGeneration);
+  // Verifica se algum tipo específico está selecionado (além de "all")
+  const anySpecificTypeSelected = selectedTypes.length > 0 && !selectedTypes.includes("all");
+
+  let filteredByType;
+
+  if (!anySpecificTypeSelected) {
+    // Se nenhum tipo específico estiver selecionado, mostra todos os tipos (equivale a "all")
+    filteredByType = filteredByGeneration;
+  } else {
+    // Se tipos específicos estiverem selecionados, filtra por eles
+    filteredByType = filteredByGeneration.filter(pokemon =>
+      selectedTypes.some(type => pokemon.type.includes(type))
+    );
+  }
+
+  // Renderiza os Pokémon resultantes
+  renderPokemon(filteredByType);
 };
 
 // Atualizar a geração selecionada ao interagir com os botões de radio
 document.querySelectorAll('input[name="generation"]').forEach((radio) => {
   radio.addEventListener('change', (e) => {
     selectedGeneration = parseInt(e.target.value);
-    selectedTypes = ["all"]; // Sempre que uma geração for selecionada, definimos "All" como tipo padrão
-    document.querySelectorAll("#filter-menu input[type='checkbox']").forEach((checkbox) => {
-      checkbox.checked = false; // Desmarcar todas as opções de tipo
-    });
-    document.querySelector('input[value="all"]').checked = true; // Marcar "All" como selecionado
+
+    // Não zera os tipos ao trocar de geração — mantém os tipos selecionados
+    // Se nenhum estiver selecionado, define "all" como padrão
+    const checkboxes = document.querySelectorAll("#filter-menu input[type='checkbox']");
+    selectedTypes = Array.from(checkboxes)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    if (selectedTypes.length === 0) {
+      selectedTypes = ["all"];
+      document.querySelector('input[value="all"]').checked = true;
+    }
+
     filterByGeneration();
   });
 });
