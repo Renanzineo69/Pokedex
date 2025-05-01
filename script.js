@@ -17,8 +17,22 @@ let loadedPokemonCount = 0;
 const pokemonBatchSize = 50;
 const maxPokemonId = 1025;
 
+// Função para mostrar a mensagem de "loading"
+const showLoadingMessage = () => {
+  const loadingMessage = document.getElementById("loading-message");
+  loadingMessage.style.display = "block";
+};
+
+// Função para esconder a mensagem de "loading"
+const hideLoadingMessage = () => {
+  const loadingMessage = document.getElementById("loading-message");
+  loadingMessage.style.display = "none";
+};
+
 // Função para buscar dados dos Pokémon da API em lotes
 const fetchPokemon = async () => {
+  showLoadingMessage();  // Exibe a mensagem de loading
+
   const pokemonList = [];
   let nextUrl = `https://pokeapi.co/api/v2/pokemon?limit=${pokemonBatchSize}&offset=${loadedPokemonCount}`;
 
@@ -73,6 +87,8 @@ const fetchPokemon = async () => {
   }
 
   loadedPokemonCount += pokemonList.length;
+  hideLoadingMessage();  // Esconde a mensagem de loading após o carregamento
+
   return pokemonList;
 };
 
@@ -244,6 +260,22 @@ const initPokedex = async () => {
 };
 
 initPokedex();
+
+// Infinite scroll: carrega mais Pokémon quando chegar ao final da página
+window.addEventListener("scroll", async () => {
+  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+
+  if (nearBottom && loadedPokemonCount < maxPokemonId) {
+    const newPokemon = await fetchPokemon();
+    allPokemon = [...allPokemon, ...newPokemon];
+
+    if (searchBar.value.trim()) {
+      filterPokemon(searchBar.value.trim().toLowerCase(), allPokemon);
+    } else {
+      filterByGeneration();
+    }
+  }
+});
 
 // Função para converter números para romanos
 function convertToRoman(num) {
