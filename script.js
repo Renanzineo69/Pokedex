@@ -8,6 +8,7 @@ const generationTabButton = document.getElementById("generation-tab");
 const typeTabButton = document.getElementById("type-tab");
 const tabHighlight = document.getElementById("tab-highlight");
 const clearFiltersButton = document.getElementById("clear-filters-btn"); // Botão de limpar filtros
+const pokemonCache = new Map();  // Cache global para armazenar Pokémon já carregados
 let allPokemon = [];
 let selectedTypes = ["all"];
 let selectedGeneration = null;
@@ -26,8 +27,14 @@ const fetchPokemon = async () => {
     const data = await response.json();
 
     for (const pokemon of data.results) {
+      if (pokemonCache.has(pokemon.name)) {
+        pokemonList.push(pokemonCache.get(pokemon.name));
+        continue;
+      }
+
       const pokemonData = await fetch(pokemon.url);
       const pokemonDetails = await pokemonData.json();
+
       if (pokemonDetails.id <= maxPokemonId) {
         const generation = pokemonDetails.id <= 151
           ? 1 : pokemonDetails.id <= 251
@@ -44,14 +51,17 @@ const fetchPokemon = async () => {
           || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonDetails.id}.gif`
           || null;
 
-        pokemonList.push({
+        const pokemonObj = {
           id: pokemonDetails.id,
           name: pokemonDetails.name,
           staticImage: pokemonDetails.sprites.front_default,
           animatedImage: animatedImage,
           type: pokemonDetails.types.map((type) => type.type.name),
           generation: generation,
-        });
+        };
+
+        pokemonCache.set(pokemon.name, pokemonObj);
+        pokemonList.push(pokemonObj);
       }
     }
 
